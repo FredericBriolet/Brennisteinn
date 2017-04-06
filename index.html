@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="">
+  <head>
+    <meta charset="utf-8">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Brennisteinn</title>    
+    <link rel="stylesheet" href="styles/main.css">
+  </head>
+  <body>
+    <!--[if IE]>
+      <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+    <![endif]-->
+
+    <script src="scripts/vendor.js"></script>
+    <canvas id="canvas"></canvas>
+    <audio src="sounds/sigurros.mp3"></audio>
+
+    <script id="shaderVS" type="shader">
+      varying vec2 vUv; 
+      uniform float iGlobalTime;
+
+      void main()
+      {
+          vUv = uv;
+
+          vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+          gl_Position = projectionMatrix * mvPosition;
+      }
+    </script>
+
+    <script id="shaderFS" type="shader">
+    precision highp float;
+    uniform vec2 uScreenResolution;
+    uniform float iGlobalTime;
+    uniform float foo;
+
+    varying vec2 vUv;
+
+    float rand(vec2 co){
+      return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
+    }
+
+     void main(){
+         vec2 uv = -1.0 + 2.0 * vUv;
+
+         //vec2 uv = gl_FragCoord.xy / uScreenResolution.xy;
+      
+         vec2 pos = vec2(gl_FragCoord.x / uv.x, gl_FragCoord.y / uv.x); 
+
+         float value = (sin(3.1415 * pos.y * 2.0 + iGlobalTime * 10.0) + 1.0) * 0.5;
+
+         float lum = value < rand(uv) ? .1*uv.x : uv.y;
+
+         gl_FragColor = vec4(lum * rand(uv), lum * rand(uv), lum * rand(uv), 1.0);
+     }
+    </script>
+
+    <script src="scripts/main4.js"></script>
+    <!-- endbuild -->
+  </body>
+</html>

@@ -1,0 +1,13 @@
+body {
+  background: #fafafa;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  color: #333;
+  margin: 0;
+  overflow: hidden;
+}
+
+#canvas {
+  position: absolute;
+}
+
+/*# sourceMappingURL=data:application/json;charset=utf8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIm1haW4uc2NzcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFHQTtFQUNFLG9CQUFvQjtFQUNwQiw0REFBNEQ7RUFDNUQsWUFBWTtFQUNaLFVBQVU7RUFDVixpQkFBaUI7Q0FDbEI7O0FBRUQ7RUFDQyxtQkFBbUI7Q0FDbkIiLCJmaWxlIjoibWFpbi5jc3MiLCJzb3VyY2VzQ29udGVudCI6WyIvLyBib3dlcjpzY3NzXG4vLyBlbmRib3dlclxuXG5ib2R5IHtcbiAgYmFja2dyb3VuZDogI2ZhZmFmYTtcbiAgZm9udC1mYW1pbHk6ICdIZWx2ZXRpY2EgTmV1ZScsIEhlbHZldGljYSwgQXJpYWwsIHNhbnMtc2VyaWY7XG4gIGNvbG9yOiAjMzMzO1xuICBtYXJnaW46IDA7XG4gIG92ZXJmbG93OiBoaWRkZW47XG59XG5cbiNjYW52YXMge1xuXHRwb3NpdGlvbjogYWJzb2x1dGU7XG59XG4iXX0= */
