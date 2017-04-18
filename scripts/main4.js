@@ -424,17 +424,17 @@ steps.push(createStep10);
 var createStep11 = function(stepXPosition){
 	var group = new THREE.Object3D();
 
-	var line1 = new THREE.Mesh( new THREE.BoxGeometry( 0.1, 80, 100 ), shaderMaterial );
+	var line1 = new THREE.Mesh( new THREE.BoxGeometry( 0.1, 80, 120 ), shaderMaterial );
 	line1.position.x = -2;
 	line1.position.z = -50;
 	group.add( line1 );
 
-	var line2 = new THREE.Mesh( new THREE.BoxGeometry( 0.1, 80, 100 ), shaderMaterial );
+	var line2 = new THREE.Mesh( new THREE.BoxGeometry( 0.1, 80, 120 ), shaderMaterial );
 	line2.position.x = 2;
 	line2.position.z = -50;
 	group.add( line2 );
 
-	var roof = new THREE.Mesh( new THREE.BoxGeometry( 10, 1, 100 ), shaderMaterial );
+	var roof = new THREE.Mesh( new THREE.BoxGeometry( 10, 1, 120 ), shaderMaterial );
 	roof.position.x = 0;
 	roof.position.y = 10;
 	roof.position.z = -50;
@@ -799,30 +799,79 @@ steps.push(createStep23);
 
 var createStep24 = function(stepXPosition){
 	var group = new THREE.Object3D();
-	var SUBDIVISIONS = 100;
-	var geometry = new THREE.Geometry();
-	var curve = new THREE.QuadraticBezierCurve3();
-	var color = new THREE.Color( 0xaaaaaa );
-	var lineMaterial = new THREE.LineBasicMaterial({color:color, linewidth: 1 });
-	for (var i = -50; i < 50; i++) {
-		var position = new THREE.Vector3( 20*(Math.random()-Math.random()), 20*(Math.random()-Math.random()), -200 );
-		var geometry = new THREE.Geometry();
-		//curve.v0 = new THREE.Vector3( 0,  0, -400 );
-		curve.v0 = new THREE.Vector3( 20*(Math.random()-Math.random()), 20*(Math.random()-Math.random()), i );
-		curve.v1 = position;
-		curve.v2 = position;
-		//curve.v2 = new THREE.Vector3( 20*(Math.random()-Math.random()), 20*(Math.random()-Math.random()), 10*(Math.random()-Math.random()));
-		for (var j = 0; j < SUBDIVISIONS; j++) {
-			geometry.vertices.push( curve.getPoint(j / SUBDIVISIONS) )
+	var numberOfCircles = 200;
+
+	for (var i = 0; i < numberOfCircles; i++) {
+
+		var tab = ['f', 'e', 'd', 'c', 'b', 'a', '9', '8', '7', '6', '5', '4', '3', '2', '1'];
+		tab.reverse();
+		var letter = '1';
+
+		//letter = tab[ Math.floor(i / (numberOfCircles/tab.length/2) ) ];
+		letter = tab[ Math.floor(Math.random() * (Math.cos(i/10)*10)) ];
+		//letter = tab[ Math.floor(Math.random() * (Math.cos(i*3)*3)) ];
+		//letter = tab[ Math.round(i / (numberOfCircles/tab.length/1.9) ) ];
+		//letter = tab[Math.floor(Math.cos(i/3)*3 * tab.length)];
+		if(!!letter === false) {
+			letter = '1';
 		}
-		var line = new THREE.Line(geometry, lineMaterial );
-		line.position.set(0, 0, 15);
-		group.add(line);
+		var color = '0x'+letter+letter+letter+letter+letter+letter+'';
+		var specialMaterial = new THREE.LineBasicMaterial( { color: eval(color) } );
+
+		//var rand = Math.floor(Math.random() * 2.7) + 1;
+		var curve = new THREE.EllipseCurve(
+		    i, i,             // ax, aY
+		    120, 120, 	          // xRadius, yRadius
+		    1, 2/2 * Math.PI, // aStartAngle, aEndAngle
+		    false             // aClockwise
+		);
+		var points = curve.getSpacedPoints( 64 );
+		var path = new THREE.Path();
+		var geometry = path.createGeometry( points );
+		var line = new THREE.Line( geometry, specialMaterial );
+		var scale = 0.1 + i/numberOfCircles;
+		line.scale.set(scale, scale, scale);
+		line.position.set(0,0,-2*i);
+		line.rotation.z = i/3;
+		group.add( line );
 	}
+
 	group.position.x = stepXPosition;
 	groups.push(group);
 };
 steps.push(createStep24);
+
+var createStep25 = function(stepXPosition){
+	var group = new THREE.Object3D();
+	var segments = 64;
+	var lineMaterial = new THREE.LineBasicMaterial( { color: 0xffffff } );
+	var numberOfCircles = 60;
+
+	for (var i = 0; i < numberOfCircles; i++) { // z 
+		var radius = 5;
+		var geometry = new THREE.CircleGeometry( radius, segments );
+		geometry.vertices.shift();
+
+		var tab = ['f', 'e', 'd', 'c', 'b', 'a', '9', '8', '7', '6', '5', '4', '3', '2', '1'];
+		var letter = '1';
+
+		letter = tab[ Math.floor(i / (numberOfCircles/tab.length/2) ) ];
+		if(!!letter === false) {
+			letter = '1';
+		}
+		var color = '0x'+letter+letter+letter+letter+letter+letter+'';
+
+		var specialMaterial = new THREE.LineBasicMaterial( { color: eval(color) } );
+		var line = new THREE.Line( geometry, specialMaterial );
+		line.position.set(Math.cos(i/3)*3,0,-i*2);
+		line.rotation.set(0,0,i);
+		group.add( line );
+	}
+
+	group.position.x = stepXPosition;
+	groups.push(group);
+};
+steps.push(createStep25);
 
 
 var debugStep = function(n){
@@ -887,6 +936,11 @@ var render = function () {
 	// 	autoClear = true;
 	// }
 
+	/*if(currentStep === 24){
+		autoClear = false;
+	} else {
+		autoClear = true;
+	} */
 	renderer.autoClear = autoClear;
 
 	if(time > timepoints[currentStep]){
@@ -898,7 +952,7 @@ var render = function () {
 
 	camera.position.z -= 0.1;
 
-	cameraShouldNotTurn = (currentStep === 0 || currentStep === 2 || currentStep === 6 || currentStep === 10 || currentStep === 13 ||currentStep === 14 || currentStep === 16 || currentStep === 20);
+	cameraShouldNotTurn = (currentStep === 0 || currentStep === 2 || currentStep === 6 || currentStep === 10 || currentStep === 13 ||currentStep === 14 || currentStep === 16 || currentStep === 20 || currentStep === 22);
 	 if(!cameraShouldNotTurn){
 	 	camera.rotation.z -= 0.001;
 	} else {
@@ -911,7 +965,7 @@ var render = function () {
 	renderer.render(scene, camera);
 
 	// debug, n = number of the slide to debug/create
-	//debugStep(20);
+	//debugStep(25);
 };
 
 initApp();
