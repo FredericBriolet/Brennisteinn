@@ -509,7 +509,7 @@ steps.push(createStep13);
 
 var createStep14 = function(stepXPosition){
 	var group = new THREE.Object3D();
-	var bg = new THREE.Mesh( new THREE.BoxGeometry( 1000, 1000, 1 ), basicMaterial );
+	var bg = new THREE.Mesh( new THREE.BoxGeometry( 1500, 1500, 1 ), basicMaterial );
 	bg.position.set(0, 0, -400);
 	group.add(bg);
 
@@ -875,6 +875,7 @@ steps.push(createStep25);
 
 
 var debugStep = function(n){
+	currentStep = n+1;
 	if(time > 2){
 		if(stepsVariables[n-1] === false){
 			showStep(n-1);
