@@ -120,6 +120,14 @@ timeRange.onChange(function(value) {
 	goToSecond(value);
 });
 
+dat.GUI.toggleHide();
+
+document.addEventListener('keydown', function(event){
+	if(event.keyCode === 'h') {
+		dat.GUI.toggleHide();
+	}
+})
+
 var initApp = function() {
 
 	camera.position.x = 0;
