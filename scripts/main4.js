@@ -68,7 +68,7 @@ function onWindowResize(){
 
 
 var debugStep = function(n){
-	currentStep = n+1;
+	currentStep = n-1;
 	if(time > 2){
 		if(stepsVariables[n-1] === false){
 			showStep(n-1);
@@ -140,6 +140,7 @@ var render = function () {
 	}
 
 	cameraShouldNotTurn = (currentStep === 0 || currentStep === 2 || currentStep === 6 || currentStep === 10 || currentStep === 13 ||currentStep === 14 || currentStep === 16 || currentStep === 20 || currentStep === 22 || currentStep === 25);
+	// cameraShouldNotTurn = (currentStep === 0 || currentStep === 2 || currentStep === 6 || currentStep === 10 || currentStep === 13 ||currentStep === 14 || currentStep === 20 || currentStep === 22 || currentStep === 25);
 	 if(!cameraShouldNotTurn){
 	 	camera.rotation.z -= 0.001;
 	} else {
@@ -150,7 +151,7 @@ var render = function () {
 	renderer.render(scene, camera);
 
 	// debug, n = number of the slide to debug/create
-	// debugStep(24);
+	// debugStep(17);
 };
 
 initApp();

@@ -467,9 +467,9 @@ steps.push(createStep16);
 var createStep17 = function(stepXPosition){
   var group = new THREE.Object3D();
 
-  for (var i = 0; i < 40; i++) {
+  for (var i = 0; i < 90; i++) {
     var positionX = (Math.random()-Math.random()) * i * 5;
-    var positionZ = -i*7 + Math.random()*90;
+    var positionZ = -i*5 + Math.random()*90;
     var positionY = Math.random()*60;
     var height = 20 + (Math.random()-Math.random())*2;
     var box = new THREE.Mesh( new THREE.BoxGeometry( .25, .25, height ), basicMaterial );
@@ -487,10 +487,18 @@ var createStep17 = function(stepXPosition){
 
     var boxu = new THREE.Mesh( new THREE.BoxGeometry( height/2, .25, .25 ), basicMaterial );
     boxu.position.x = positionX;
-    boxu.position.z = positionZ - height/3;
     boxu.position.y = positionY;
+    boxu.position.z = positionZ - height/3;
     boxu.rotation.z = -Math.PI/4;
     group.add( boxu );
+
+    var treeHeight = 20 + Math.random()*100;
+    var tree = new THREE.Mesh( new THREE.BoxGeometry( .1, .1, treeHeight ), blackMaterial );
+    tree.position.x = positionX > 0 ? positionX + Math.random()*10 : positionX - Math.random()*10;
+    tree.position.y = -9;
+    tree.position.z = positionZ - Math.random()*20;
+    // tree.rotation.z = 2*(Math.random()-Math.random());
+    group.add(tree);
   }
   var boxa = new THREE.Mesh( new THREE.BoxGeometry( 1000, 1, 1000 ), basicMaterial );
   boxa.position.x = 0;
@@ -521,25 +529,6 @@ var createStep18 = function(stepXPosition){
   groups.push(group);
 };
 steps.push(createStep18);
-
-/*var createStep19 = function(stepXPosition){
-  var group = new THREE.Object3D();
-  for (var i = 0; i < 6; i++) { // z 
-    for (var j = 0; j < 20; j++) { // colonne
-      for (var k = 0; k < 20; k++) { // ligne
-        var box = new THREE.Mesh( new THREE.BoxGeometry( 30, 0.01, 0.1 ), material );
-        box.position.x = (-60/2)+k*2;
-        box.position.y = (-57/2)+j*2;
-        box.position.z = -i * Math.random() * 10;
-        box.rotation.y = i % 1.2;
-        group.add( box );
-      }
-    }
-  }
-  group.position.x = stepXPosition;
-  groups.push(group);
-};
-steps.push(createStep19);*/
 
 var createStep19 = function(stepXPosition){
   var group = new THREE.Object3D();
