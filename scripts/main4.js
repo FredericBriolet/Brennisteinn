@@ -100,6 +100,26 @@ var showStep = function(number){
 	autoClear = true;
 };
 
+var goToSecond = function(desiredTime = 40) {
+	audioTag.currentTime = parseFloat(desiredTime);
+
+	for (var i = 0; i <= timepoints.length-1; i++) {
+		if(desiredTime >= timepoints[i] && desiredTime <= timepoints[i+1]) {
+			currentStep = i;
+			showStep(currentStep);
+			return;
+		}
+	}
+	currentStep = 0;
+	showStep(currentStep);
+}
+
+var gui = new dat.GUI();
+var timeRange = gui.add(audioTag, 'currentTime', 0, 443).listen();
+timeRange.onChange(function(value) {
+	goToSecond(value);
+});
+
 var initApp = function() {
 
 	camera.position.x = 0;

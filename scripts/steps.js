@@ -2,11 +2,9 @@ var steps = [];
 
 var createStep1 = function(stepXPosition){
   var group = new THREE.Object3D();
-    var floor = new THREE.Mesh( new THREE.CubeGeometry( 10, 20, 1 ), shaderMaterial );
-    //var floor = new THREE.Mesh( new THREE.CubeGeometry( 10, 1, 100 ), shaderMaterial );
-    //floor.position.y = -1;
-    floor.position.z = -50
-    group.add(floor);
+  var floor = new THREE.Mesh( new THREE.CubeGeometry( 10, 20, 1 ), shaderMaterial );
+  floor.position.z = -50
+  group.add(floor);
   groups.push(group);
 };
 steps.push(createStep1);
