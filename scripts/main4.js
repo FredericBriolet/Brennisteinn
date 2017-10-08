@@ -24,8 +24,44 @@ var renderer = new THREE.WebGLRenderer({antialias: true, preserveDrawingBuffer: 
 renderer.setSize( window.innerWidth, window.innerHeight );
 document.body.appendChild( renderer.domElement );
 
+var gui = new dat.GUI();
+
+var composer = new WAGNER.Composer( renderer );
+composer.setSize( window.innerWidth, window.innerHeight );
+
+var invertPass = new WAGNER.InvertPass();
+invertPass.invertPassActive = false;
+
+var bloomPass = new WAGNER.MultiPassBloomPass();
+bloomPass.bloomPassActive = false;
+bloomPass.params.blurAmount = 1.5;
+bloomPass.params.zoomBlurStrength = 1;
+
+
+var postprocess = gui.addFolder('postprocessing')
+var invertPassActiveGui = postprocess.add(invertPass, 'invertPassActive');
+
+var bloomPassActiveGui = postprocess.add(bloomPass, 'bloomPassActive');
+postprocess.add( bloomPass.params, 'blurAmount' ).min(0).max(2);
+postprocess.add( bloomPass.params, 'applyZoomBlur' );
+postprocess.add( bloomPass.params, 'zoomBlurStrength' ).min(0).max(2);
+
+renderer.autoClearColor = true;
+composer.reset();
+composer.render( scene, camera );
+composer.pass( bloomPass );
+composer.pass( invertPass );
+composer.toScreen();
+
 // STATS
 var stats = new Stats();
+
+// Align top-left
+stats.domElement.style.position = 'absolute';
+stats.domElement.style.left = '0px';
+stats.domElement.style.top = '0px';
+stats.domElement.style.display = 'none';
+
 document.body.appendChild( stats.domElement );
 
 // LIGHTS
@@ -114,17 +150,16 @@ var goToSecond = function(desiredTime = 40) {
 	showStep(currentStep);
 }
 
-var gui = new dat.GUI();
 var timeRange = gui.add(audioTag, 'currentTime', 0, 443).listen();
 timeRange.onChange(function(value) {
 	goToSecond(value);
 });
 
 dat.GUI.toggleHide();
-
 document.addEventListener('keydown', function(event){
-	if(event.keyCode === 'h') {
-		dat.GUI.toggleHide();
+	if(event.keyCode === 72) {
+		const display = stats.domElement.style.display === 'none' ? 'block' : 'none';
+		stats.domElement.style.display = display;
 	}
 })
 
@@ -152,7 +187,7 @@ var render = function () {
 	requestAnimationFrame( render );
 	time = audioTag.currentTime;
 
-	renderer.autoClear = autoClear;
+	// renderer.autoClear = autoClear;
 
 	if(time > timepoints[currentStep]){
 		if(stepsVariables[currentStep] === false){
@@ -177,6 +212,17 @@ var render = function () {
 
 	stats.update();
 	renderer.render(scene, camera);
+
+	composer.reset();
+	composer.render( scene, camera );
+	if(invertPass.invertPassActive) {
+		composer.pass( invertPass );
+	}
+
+	if(bloomPass.bloomPassActive) {
+		composer.pass( bloomPass );
+	}
+	composer.toScreen();
 
 	// debug, n = number of the slide to debug/create
 	// debugStep(17);
