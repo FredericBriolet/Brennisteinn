@@ -1,5 +1,18 @@
+// OBJECTS
+var groups = [];
+var stepsVariables = [];
+var stepXPosition = 0;
+var currentStep = 0;
+var timepoints = [5.7, 7.6, 9.7, 11.5, 13.7, 21.7, 29.7, 37.6, 46.4, 54.6, 62.7, 70.7, 79.6, 87.6, 95.4, 99.7, 103.5, 107.6, 111.4, 115.8, 117.8, 119.6, 121.8, 123.6];
+var cameraShouldNotTurn = true;
+var autoClear = true;
+var experienceHasBegun = false;
+var screenWidth = window.innerWidth;
+var screenHeight = window.innerHeight;
+var material, shaderMaterial, basicMaterial, particle;
+
 var scene = new THREE.Scene();
-var camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 1000 );
+var camera = new THREE.PerspectiveCamera( 75, screenWidth/screenHeight, 0.1, 1000 );
 var clock = new THREE.Clock({ autostart: false });
 
 var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -7,27 +20,20 @@ var audioTag = document.querySelector('audio');
 //var media = audioCtx.createMediaElementSource(audioTag);
 var time = audioTag.currentTime;
 
-// OBJECTS
-var groups = [];
-var stepsVariables = [];
-var stepXPosition = 0;
-var currentStep = 0;
-var timepoints = [5.7, 7.6, 9.7, 11.5, 13.7, 21.7, 29.7, 37.6, 46.4, 54.6, 62.7, 70.7, 79.6, 87.6, 95.4, 99.7, 103.5, 107.6, 111.4, 115.8, 117.8, 119.6, 121.8, 123.6];
-var material, shaderMaterial, basicMaterial;
-var particle;
-var cameraShouldNotTurn = true;
-var autoClear = true;
-var experienceHasBegun = false;
 
 // RENDERER
+// var renderer = new THREE.WebGLRenderer({antialias: true, preserveDrawingBuffer: true});
 var renderer = new THREE.WebGLRenderer({antialias: true, preserveDrawingBuffer: true});
-renderer.setSize( window.innerWidth, window.innerHeight );
+renderer.setSize( screenWidth, screenHeight );
 document.body.appendChild( renderer.domElement );
 
 var gui = new dat.GUI();
 
-var composer = new WAGNER.Composer( renderer );
-composer.setSize( window.innerWidth, window.innerHeight );
+var composer = new WAGNER.Composer( renderer, { useRGBA: false } );
+composer.setSize( screenWidth, screenHeight );
+
+var fxaaPass = new WAGNER.FXAAPass();
+fxaaPass.fxaaPassActive = false;
 
 var invertPass = new WAGNER.InvertPass();
 invertPass.invertPassActive = false;
@@ -39,6 +45,8 @@ bloomPass.params.zoomBlurStrength = 1;
 
 
 var postprocess = gui.addFolder('postprocessing')
+var fxaaPassActiveGui = postprocess.add(fxaaPass, 'fxaaPassActive');
+
 var invertPassActiveGui = postprocess.add(invertPass, 'invertPassActive');
 
 var bloomPassActiveGui = postprocess.add(bloomPass, 'bloomPassActive');
@@ -213,16 +221,24 @@ var render = function () {
 	stats.update();
 	renderer.render(scene, camera);
 
-	composer.reset();
-	composer.render( scene, camera );
-	if(invertPass.invertPassActive) {
-		composer.pass( invertPass );
-	}
+	const postProccessEnabled = fxaaPass.fxaaPassActive || invertPass.invertPassActive || bloomPass.bloomPassActive;
+	if(postProccessEnabled) {
+		composer.reset();
+		composer.render( scene, camera );
 
-	if(bloomPass.bloomPassActive) {
-		composer.pass( bloomPass );
+		if(invertPass.fxaaPassActive) {
+			composer.pass( fxaaPass );
+		}
+
+		if(invertPass.invertPassActive) {
+			composer.pass( invertPass );
+		}
+
+		if(bloomPass.bloomPassActive) {
+			composer.pass( bloomPass );
+		}
+		composer.toScreen();
 	}
-	composer.toScreen();
 
 	// debug, n = number of the slide to debug/create
 	// debugStep(17);
